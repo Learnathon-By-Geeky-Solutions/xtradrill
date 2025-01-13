@@ -66,7 +66,7 @@ const LandingPage = () => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Terminal className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-600" />
               <span className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Inherit
+                hiring.ai
               </span>
             </div>
 

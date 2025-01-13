@@ -14,7 +14,7 @@ const Header = () => {
       {/* Logo Section - Replaced with Terminal icon and text */}
       <Link href="/" className="flex items-center">
         <Terminal className="h-10 w-10 text-indigo-600" />
-        <span className="text-3xl font-bold text-white"> Inherit</span>
+        <span className="text-3xl font-bold text-white"> hiring.ai</span>
       </Link>
 
       {/* Optional: Add navigation links or user-related buttons */}
