@@ -36,15 +36,24 @@ export async function POST(req) {
     return new Response("Error occurred", { status: 400 });
   }
 
-  const { id } = evt?.data;
-  const eventType = evt?.type;
+  if (!evt || !evt.data) {
+    console.error("Invalid webhook event data");
+    return new Response("Error occurred - Invalid webhook data", { status: 400 });
+  }
+
+  const { id } = evt.data;
+  const eventType = evt.type;
   console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
   console.log("Webhook body:", body);
 
   if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, first_name, last_name, image_url, email_addresses, username } = evt?.data;
+    const { id, first_name, last_name, image_url, email_addresses, username } = evt.data;
     try {
-      const primaryEmail = email_addresses.find(email => email.id === evt.data.primary_email_address_id)?.email_address;
+      if (!email_addresses || !Array.isArray(email_addresses)) {
+        throw new Error("Invalid email addresses data");
+      }
+      
+      const primaryEmail = email_addresses.find(email => email && email.id === evt.data.primary_email_address_id)?.email_address || '';
       
       console.log("Processing user data:", { id, first_name, last_name, image_url, primaryEmail, username });
       
@@ -65,7 +74,7 @@ export async function POST(req) {
   }
 
   if (eventType === "user.deleted") {
-    const { id } = evt?.data;
+    const { id } = evt.data;
     try {
       await deleteUser(id);
       return new Response("User is deleted", { status: 200 });
