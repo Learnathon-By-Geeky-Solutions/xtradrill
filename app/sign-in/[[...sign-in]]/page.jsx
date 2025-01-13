@@ -9,11 +9,9 @@ const SignInPage = () => {
   }, []);
 
   return (
-    <>
-      <div className="flex justify-center w-full mt-6">
-        <SignIn afterSignInUrl="dashboard" />
-      </div>
-    </>
+    <div className="flex justify-center w-full mt-6">
+      <SignIn afterSignInUrl="dashboard" />
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import PropTypes from 'prop-types';
 import { useState, useEffect } from "react"; 
 import Header from "./Header"; 
 import Sidebar from "./Sidebar";
@@ -54,3 +55,7 @@ export default function ClientLayout({ children }) {
     </>
   );
 }
+
+ClientLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

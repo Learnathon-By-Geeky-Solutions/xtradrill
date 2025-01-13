@@ -11,9 +11,10 @@ import {
   Scale,
   Terminal,
   Users,
-  Youtube,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
+import PropTypes from 'prop-types';
 import React, { useState } from "react";
 
 function FeatureCard({ icon, title, description }) {
@@ -27,6 +28,12 @@ function FeatureCard({ icon, title, description }) {
     </div>
   );
 }
+
+FeatureCard.propTypes = {
+  icon: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
 
 function SDGCard({ icon, number, title, description }) {
   return (
@@ -46,6 +53,13 @@ function SDGCard({ icon, number, title, description }) {
     </div>
   );
 }
+
+SDGCard.propTypes = {
+  icon: PropTypes.node.isRequired,
+  number: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
 
 const LandingPage = () => {
   const { isSignedIn, isLoaded } = useUser(); // Access user authentication state
@@ -180,7 +194,8 @@ const LandingPage = () => {
               <div className="md:w-1/2">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   Hero Text Here
-                  <span className="text-indigo-600"> With Highlight</span>
+                  {" "}
+                  <span className="text-indigo-600">With Highlight</span>
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-700 mb-10 max-w-3xl mx-auto md:mx-0 px-4">
                   Your compelling description goes here. Make it engaging and impactful
@@ -244,7 +259,7 @@ const LandingPage = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
               <FeatureCard
-                icon={<Youtube />}
+                icon={<Video />}
                 title="Feature 1"
                 description="Description of your first amazing feature goes here. Highlight its key benefits."
               />

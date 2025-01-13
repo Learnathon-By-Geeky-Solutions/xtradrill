@@ -3,6 +3,7 @@ import { light } from "@clerk/themes";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Kanit } from "next/font/google";
+import PropTypes from 'prop-types';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClientLayout from "./components/ClientLayout";
@@ -63,3 +64,7 @@ export default function RootLayout({ children }) {
     </ClerkProvider>
   );
 }
+
+RootLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

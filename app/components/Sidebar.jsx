@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import {
-  FaChevronDown,
   FaCodepen,
   FaComments,
   FaQuestionCircle,
 } from "react-icons/fa";
-import { MdAddBox, MdNotifications } from "react-icons/md";
+import { MdNotifications } from "react-icons/md";
 import { SiGoogleclassroom } from "react-icons/si";
 import {
   TbLayoutDashboardFilled,
@@ -17,7 +17,6 @@ import {
 } from "react-icons/tb";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -31,13 +30,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       }
     };
 
-    // Set initial state
     handleResize();
-
-    // Add event listener
     window.addEventListener("resize", handleResize);
-
-    // Cleanup
     return () => window.removeEventListener("resize", handleResize);
   }, [setIsOpen]);
 
@@ -47,23 +41,27 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     }
   };
 
-  const toggleSubMenu = () => {
-    setIsSubMenuOpen(!isSubMenuOpen);
+  // Get sidebar translation class based on state
+  const getSidebarTranslateClass = () => {
+    if (isOpen) return "translate-x-0";
+    return isMobile ? "-translate-x-[85%]" : "";
   };
 
   return (
     <>      
-      {/* Blur overlay for mobile */}
       {isMobile && isOpen && (
-        <div
+        <button
+          type="button"
           className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
           onClick={handleOutsideClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setIsOpen(false);
+          }}
+          aria-label="Close sidebar overlay"
         />
       )}      
       
-      <div className={`sidebar-content fixed top-20 left-0 h-full bg-sky-50 transition-all duration-300 z-50 shadow-2xl ${
-        isOpen ? "translate-x-0" : isMobile ? "-translate-x-[85%]" : ""
-      }`}>
+      <div className={`sidebar-content fixed top-20 left-0 h-full bg-sky-50 transition-all duration-300 z-50 shadow-2xl ${getSidebarTranslateClass()}`}>
         <nav className="flex flex-col w-56 p-4 pr-12 space-y-4">
           <Link
             href="/dashboard"
@@ -123,6 +121,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       </div>
     </>
   );
+};
+
+Sidebar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  setIsOpen: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

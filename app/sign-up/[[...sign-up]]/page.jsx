@@ -9,11 +9,9 @@ const SignUpPage = () => {
   }, []);
 
   return (
-    <>
-      <div className="flex justify-center w-full mt-6">
-        <SignUp afterSignUpUrl="dashboard" />
-      </div>
-    </>
+    <div className="flex justify-center w-full mt-6">
+      <SignUp afterSignUpUrl="dashboard" />
+    </div>
   );
 };
 
