@@ -15,13 +15,13 @@ const kanit = Kanit({
 });
 
 export const metadata = {
-  title: "Inherit",
-  description: "Inherit: A Unified Learning & Coding Platform",
+  title: "hiring.ai",
+  description: "hiring.ai: AI Powered One-stop Recruitment Platform",
   openGraph: {
     type: "website",
-    url: "https://inherit-xtradrill.vercel.app",
-    title: "Inherit",
-    description: "Inherit: A Unified Learning & Coding Platform",
+    url: "https://hiringai.vercel.app",
+    title: "hiring.ai",
+    description: "hiring.ai: AI Powered One-stop Recruitment Platform",
     image:
       "https://raw.githubusercontent.com/takitajwar17/inherit/refs/heads/main/public/inherit.png",
   },
