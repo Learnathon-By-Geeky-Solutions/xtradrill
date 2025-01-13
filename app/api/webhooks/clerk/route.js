@@ -2,78 +2,98 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { createOrUpdateUser, deleteUser } from "@/lib/actions/user";
 
-export async function POST(req) {
+const validateWebhookSecret = () => {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-
   if (!WEBHOOK_SECRET) {
     throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local");
   }
+  return WEBHOOK_SECRET;
+};
 
-  const headerPayload = headers();
+const validateHeaders = (headerPayload) => {
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error occurred -- no svix headers", { status: 400 });
+    throw new Error("No svix headers");
   }
 
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
+  return { svix_id, svix_timestamp, svix_signature };
+};
 
+const verifyWebhook = async (WEBHOOK_SECRET, body, headers) => {
   const wh = new Webhook(WEBHOOK_SECRET);
-
-  let evt;
-
   try {
-    evt = wh.verify(body, {
-      "svix-id": svix_id,
-      "svix-timestamp": svix_timestamp,
-      "svix-signature": svix_signature,
-    });
+    return wh.verify(body, headers);
   } catch (err) {
     console.error("Error verifying webhook:", err);
-    return new Response("Error occurred", { status: 400 });
+    throw new Error("Webhook verification failed");
   }
+};
 
-  const { id } = evt?.data;
-  const eventType = evt?.type;
-  console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-  console.log("Webhook body:", body);
+const handleUserCreationOrUpdate = async (data) => {
+  const { id, first_name, last_name, image_url, email_addresses, username, primary_email_address_id } = data;
+  
+  const primaryEmail = email_addresses?.find(
+    email => email?.id === primary_email_address_id
+  )?.email_address ?? '';
 
-  if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, first_name, last_name, image_url, email_addresses, username } = evt?.data;
-    try {
-      const primaryEmail = email_addresses.find(email => email.id === evt.data.primary_email_address_id)?.email_address;
-      
-      console.log("Processing user data:", { id, first_name, last_name, image_url, primaryEmail, username });
-      
-      await createOrUpdateUser(
-        id,
-        first_name,
-        last_name,
-        image_url,
-        primaryEmail,
-        username
-      );
-      
-      return new Response(`User is ${eventType === "user.created" ? "created" : "updated"}`, { status: 200 });
-    } catch (error) {
-      console.error("Error creating or updating user:", error);
-      return new Response("Error occurred", { status: 400 });
+  await createOrUpdateUser(
+    id,
+    first_name,
+    last_name,
+    image_url,
+    primaryEmail,
+    username
+  );
+};
+
+export async function POST(req) {
+  try {
+    const WEBHOOK_SECRET = validateWebhookSecret();
+    const headerPayload = headers();
+    const { svix_id, svix_timestamp, svix_signature } = validateHeaders(headerPayload);
+
+    const payload = await req.json();
+    const body = JSON.stringify(payload);
+
+    const evt = await verifyWebhook(
+      WEBHOOK_SECRET,
+      body,
+      {
+        "svix-id": svix_id,
+        "svix-timestamp": svix_timestamp,
+        "svix-signature": svix_signature,
+      }
+    );
+
+    if (!evt?.data) {
+      return new Response("Invalid webhook data", { status: 400 });
     }
-  }
 
-  if (eventType === "user.deleted") {
-    const { id } = evt?.data;
-    try {
-      await deleteUser(id);
-      return new Response("User is deleted", { status: 200 });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      return new Response("Error occurred", { status: 400 });
+    const eventType = evt.type;
+    console.log(`Webhook with an ID of ${evt.data.id} and type of ${eventType}`);
+    console.log("Webhook body:", body);
+
+    switch (eventType) {
+      case "user.created":
+      case "user.updated":
+        await handleUserCreationOrUpdate(evt.data);
+        return new Response(
+          `User is ${eventType === "user.created" ? "created" : "updated"}`,
+          { status: 200 }
+        );
+
+      case "user.deleted":
+        await deleteUser(evt.data.id);
+        return new Response("User is deleted", { status: 200 });
+
+      default:
+        return new Response("", { status: 200 });
     }
+  } catch (error) {
+    console.error("Error processing webhook:", error);
+    return new Response(error.message || "Error occurred", { status: 400 });
   }
-
-  return new Response("", { status: 200 });
 }
