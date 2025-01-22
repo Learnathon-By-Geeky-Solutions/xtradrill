@@ -2,17 +2,62 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import ADMIN_EMAILS from "@/lib/config/admins";
 
 export default function AdminPage() {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const router = useRouter();
+  const [hasPermission, setHasPermission] = useState(null);
 
   useEffect(() => {
     if (isSignedIn === false) {
       router.push("/sign-in");
+      return;
     }
-  }, [isSignedIn, router]);
+
+    const userEmail = user?.primaryEmailAddress?.emailAddress;
+    console.log("User Email:", userEmail);
+    
+    
+    // Check if user is admin
+    const isAdmin = Array.isArray(ADMIN_EMAILS) && userEmail && ADMIN_EMAILS.includes(userEmail);
+    console.log("Is Admin:", isAdmin);
+
+    if (!isAdmin) {
+      setHasPermission(false);
+      return;
+    }
+
+    setHasPermission(true);
+  }, [isSignedIn, user, router]);
+
+  if (hasPermission === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+          <p className="text-gray-600 mb-4">
+            Sorry, you don't have permission to access the admin dashboard. This area is restricted to authorized administrators only.
+          </p>
+          <button
+            onClick={() => router.push("/")}
+            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          >
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasPermission === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-12">
@@ -21,7 +66,9 @@ export default function AdminPage() {
           {/* Header */}
           <div className="px-6 py-5 border-b border-gray-200">
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-500">Welcome to the admin panel!</p>
+            <p className="mt-1 text-sm text-gray-500">
+              Welcome {user?.firstName || "Admin"}!
+            </p>
           </div>
 
           {/* Stats */}
