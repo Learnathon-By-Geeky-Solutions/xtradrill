@@ -1,0 +1,16 @@
+To complete the setup:
+
+1. Download a professional male interviewer video loop (about 10-15 seconds) showing a person speaking in a professional setting
+2. Convert it to MP4 format
+3. Name it "interviewer.mp4"
+4. Place it in this public directory
+
+Recommended video characteristics:
+- Professional male in business attire
+- Neutral background (office setting)
+- Friendly, engaging expression
+- Loop-friendly (smooth transition between end and start)
+- Resolution: 1280x720 or higher
+- Duration: 10-15 seconds
+- Format: MP4
+- Size: Keep under 5MB for good performance
