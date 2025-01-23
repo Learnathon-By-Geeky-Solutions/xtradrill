@@ -11,7 +11,6 @@ export default function EmployerRegistration() {
     companyDetails: '',
     industry: '',
     companySize: '',
-    website: '',
     contactPersonName: '',
     contactEmail: '',
     contactPhone: '',
@@ -153,21 +152,6 @@ export default function EmployerRegistration() {
                   <option value="201-500">201-500 employees</option>
                   <option value="501+">501+ employees</option>
                 </select>
-              </div>
-
-              <div>
-                <label htmlFor="website" className="block text-sm font-medium text-gray-700">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  id="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                  placeholder="https://"
-                />
               </div>
 
               <div>
