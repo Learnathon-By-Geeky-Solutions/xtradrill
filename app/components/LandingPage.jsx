@@ -3,7 +3,6 @@
 import { useUser } from "@clerk/nextjs"; // Import useUser from Clerk
 import {
   Bot,
-  ChevronRight,
   Code2,
   Globe2,
   GraduationCap,
