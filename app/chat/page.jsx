@@ -403,7 +403,7 @@ export default function VoiceChatPage() {
               : 'bg-white/10 hover:bg-white/20'
           }`}
         >
-          <Mic className={`h-8 w-8 ${isRecording ? 'text-white' : 'text-white'}`} />
+          <Mic className={`h-8 w-8 ${isRecording ? 'text-white' : 'text-red-500'}`} />
         </button>
         <button
           onClick={() => window.location.reload()}
