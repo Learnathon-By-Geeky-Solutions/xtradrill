@@ -2,14 +2,33 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { cn } from "@/lib/utils"
 import { X } from "lucide-react"
+import PropTypes from 'prop-types'
 
 const Dialog = DialogPrimitive.Root
+Dialog.propTypes = {
+  children: PropTypes.node.isRequired,
+  open: PropTypes.bool,
+  onOpenChange: PropTypes.func,
+}
 
 const DialogTrigger = DialogPrimitive.Trigger
+DialogTrigger.propTypes = {
+  children: PropTypes.node.isRequired,
+  asChild: PropTypes.bool,
+}
 
 const DialogPortal = DialogPrimitive.Portal
+DialogPortal.propTypes = {
+  children: PropTypes.node.isRequired,
+  forceMount: PropTypes.bool,
+  container: PropTypes.any,
+}
 
 const DialogClose = DialogPrimitive.Close
+DialogClose.propTypes = {
+  children: PropTypes.node,
+  asChild: PropTypes.bool,
+}
 
 const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
@@ -21,6 +40,13 @@ const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
     {...props} />
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+DialogOverlay.propTypes = {
+  className: PropTypes.string,
+  forceMount: PropTypes.bool,
+}
+DialogOverlay.defaultProps = {
+  className: '',
+}
 
 const DialogContent = React.forwardRef(({ className, children, ...props }, ref) => (
   <DialogPortal>
@@ -42,42 +68,93 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
   </DialogPortal>
 ))
 DialogContent.displayName = DialogPrimitive.Content.displayName
+DialogContent.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  forceMount: PropTypes.bool,
+  onOpenAutoFocus: PropTypes.func,
+  onCloseAutoFocus: PropTypes.func,
+  onEscapeKeyDown: PropTypes.func,
+  onPointerDownOutside: PropTypes.func,
+  onInteractOutside: PropTypes.func,
+}
+DialogContent.defaultProps = {
+  className: '',
+}
 
 const DialogHeader = ({
   className,
+  children,
   ...props
 }) => (
   <div
     className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)}
-    {...props} />
+    {...props}>
+    {children}
+  </div>
 )
 DialogHeader.displayName = "DialogHeader"
+DialogHeader.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+DialogHeader.defaultProps = {
+  className: '',
+}
 
 const DialogFooter = ({
   className,
+  children,
   ...props
 }) => (
   <div
     className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
-    {...props} />
+    {...props}>
+    {children}
+  </div>
 )
 DialogFooter.displayName = "DialogFooter"
+DialogFooter.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+DialogFooter.defaultProps = {
+  className: '',
+}
 
-const DialogTitle = React.forwardRef(({ className, ...props }, ref) => (
+const DialogTitle = React.forwardRef(({ className, children, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
-    {...props} />
+    {...props}>
+    {children}
+  </DialogPrimitive.Title>
 ))
 DialogTitle.displayName = DialogPrimitive.Title.displayName
+DialogTitle.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+DialogTitle.defaultProps = {
+  className: '',
+}
 
-const DialogDescription = React.forwardRef(({ className, ...props }, ref) => (
+const DialogDescription = React.forwardRef(({ className, children, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
-    {...props} />
+    {...props}>
+    {children}
+  </DialogPrimitive.Description>
 ))
 DialogDescription.displayName = DialogPrimitive.Description.displayName
+DialogDescription.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+DialogDescription.defaultProps = {
+  className: '',
+}
 
 export {
   Dialog,
