@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Button = ({ onClick, children, variant = 'primary', className = '' }) => {
   const baseStyles = 'px-4 py-2 rounded-md font-medium transition-colors duration-200';
@@ -16,6 +17,19 @@ const Button = ({ onClick, children, variant = 'primary', className = '' }) => {
       {children}
     </button>
   );
+};
+
+Button.propTypes = {
+  onClick: PropTypes.func,
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(['primary', 'destructive', 'outline']),
+  className: PropTypes.string,
+};
+
+Button.defaultProps = {
+  variant: 'primary',
+  className: '',
+  onClick: () => {},
 };
 
 export default Button;
