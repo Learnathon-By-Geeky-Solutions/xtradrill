@@ -1,17 +1,28 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import PropTypes from 'prop-types'
 
-const Card = React.forwardRef(({ className, ...props }, ref) => (
+const Card = React.forwardRef(({ className, children, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
       "rounded-xl border bg-card text-card-foreground shadow",
       className
     )}
+    role="article"
     {...props}
-  />
+  >
+    {children}
+  </div>
 ))
 Card.displayName = "Card"
+Card.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+Card.defaultProps = {
+  className: '',
+}
 
 const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
   <div
@@ -21,29 +32,72 @@ const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
   />
 ))
 CardHeader.displayName = "CardHeader"
+CardHeader.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+}
+CardHeader.defaultProps = {
+  className: '',
+}
 
-const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn("font-semibold leading-none tracking-tight", className)}
-    {...props}
-  />
-))
+const CardTitle = React.forwardRef(({ className, children, ...props }, ref) => {
+  if (!children) {
+    console.warn('CardTitle must have content for accessibility');
+  }
+  return (
+    <h3
+      ref={ref}
+      className={cn("font-semibold leading-none tracking-tight", className)}
+      {...props}
+    >
+      {children || 'Untitled'}
+    </h3>
+  );
+})
 CardTitle.displayName = "CardTitle"
+CardTitle.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+CardTitle.defaultProps = {
+  className: '',
+}
 
-const CardDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
+const CardDescription = React.forwardRef(({ className, children, ...props }, ref) => {
+  if (!children) {
+    console.warn('CardDescription must have content for accessibility');
+  }
+  return (
+    <p
+      ref={ref}
+      className={cn("text-sm text-muted-foreground", className)}
+      role="contentinfo"
+      {...props}
+    >
+      {children || 'No description available'}
+    </p>
+  );
+})
 CardDescription.displayName = "CardDescription"
+CardDescription.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+}
+CardDescription.defaultProps = {
+  className: '',
+}
 
 const CardContent = React.forwardRef(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
+CardContent.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+}
+CardContent.defaultProps = {
+  className: '',
+}
 
 const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
   <div
@@ -53,5 +107,12 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
   />
 ))
 CardFooter.displayName = "CardFooter"
+CardFooter.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+}
+CardFooter.defaultProps = {
+  className: '',
+}
 
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
