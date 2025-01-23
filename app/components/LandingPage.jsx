@@ -220,9 +220,9 @@ const LandingPage = () => {
                   <p className="text-lg text-gray-700 mb-6">
                     Find the perfect candidates faster with our advanced AI matching technology. Post jobs and connect with qualified candidates instantly.
                   </p>
-                  <Link href="https://hiring.clerk.com/sign-in">
+                  <Link href="/employer-registration">
                     <button className="bg-teal-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-teal-700 transition-colors w-full sm:w-auto">
-                      Sign In as Employer
+                      Register as Employer
                     </button>
                   </Link>
                   <p className="mt-4 text-sm text-gray-600">
