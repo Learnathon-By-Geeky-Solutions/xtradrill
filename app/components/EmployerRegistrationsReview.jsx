@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from "@clerk/nextjs";
 
 export default function EmployerRegistrationsReview() {
-  const { user } = useUser();
+ 
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
