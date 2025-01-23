@@ -26,7 +26,7 @@ Remember to:
 
 export async function POST(req) {
   try {
-    const { message, context, currentQuestion } = await req.json();
+    const { message,  currentQuestion } = await req.json();
 
     if (!message) {
       return NextResponse.json(

@@ -3,17 +3,16 @@ import { cn } from "@/lib/utils"
 import PropTypes from 'prop-types'
 
 const Card = React.forwardRef(({ className, children, ...props }, ref) => (
-  <div
+  <article
     ref={ref}
     className={cn(
       "rounded-xl border bg-card text-card-foreground shadow",
       className
     )}
-    role="article"
     {...props}
   >
     {children}
-  </div>
+  </article>
 ))
 Card.displayName = "Card"
 Card.propTypes = {
@@ -68,14 +67,13 @@ const CardDescription = React.forwardRef(({ className, children, ...props }, ref
     console.warn('CardDescription must have content for accessibility');
   }
   return (
-    <p
+    <footer
       ref={ref}
       className={cn("text-sm text-muted-foreground", className)}
-      role="contentinfo"
       {...props}
     >
       {children || 'No description available'}
-    </p>
+    </footer>
   );
 })
 CardDescription.displayName = "CardDescription"
