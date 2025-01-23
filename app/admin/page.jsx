@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ADMIN_EMAILS from "@/lib/config/admins";
+import ADMIN_IDS from "@/lib/config/admins";
 
 export default function AdminPage() {
   const { isSignedIn, user } = useUser();
@@ -16,12 +16,11 @@ export default function AdminPage() {
       return;
     }
 
-    const userEmail = user?.primaryEmailAddress?.emailAddress;
-    console.log("User Email:", userEmail);
+    const userId = user?.id;
+    console.log("User ID:", userId);
     
-    
-    // Check if user is admin
-    const isAdmin = Array.isArray(ADMIN_EMAILS) && userEmail && ADMIN_EMAILS.includes(userEmail);
+    // Check if user is admin using Clerk ID
+    const isAdmin = Array.isArray(ADMIN_IDS) && userId && ADMIN_IDS.includes(userId);
     console.log("Is Admin:", isAdmin);
 
     if (!isAdmin) {
