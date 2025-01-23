@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, X, Volume2, VolumeX, History } from 'lucide-react';
-import Link from 'next/link';
+import { Mic, X, Volume2, VolumeX } from 'lucide-react';
 
 const INTERVIEW_GREETING = "Hello! I'm your AI interviewer today. I'll be asking you some questions to learn more about your experience and skills. Are you ready to begin?";
 
@@ -24,7 +23,6 @@ export default function VoiceChatPage() {
   const [error, setError] = useState('');
   const [transcript, setTranscript] = useState('');
   const [messages, setMessages] = useState([]);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [interviewComplete, setInterviewComplete] = useState(false);
   
@@ -32,8 +30,6 @@ export default function VoiceChatPage() {
   const synthRef = useRef(null);
   const canvasRef = useRef(null);
   const waveAnimationRef = useRef(null);
-  const audioContextRef = useRef(null);
-  const analyserRef = useRef(null);
   const micStreamRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -57,12 +53,10 @@ export default function VoiceChatPage() {
     const drawWave = () => {
       ctx.clearRect(0, 0, width, height);
       
-      // Create gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, height);
       gradient.addColorStop(0, '#ffffff');
       gradient.addColorStop(1, '#0066ff');
 
-      // Draw circle with wave effect
       ctx.beginPath();
       for (let i = 0; i < Math.PI * 2; i += 0.01) {
         const waveAmplitude = isSpeaking ? 20 : 0;
@@ -93,9 +87,6 @@ export default function VoiceChatPage() {
     }
     if (micStreamRef.current) {
       micStreamRef.current.getTracks().forEach(track => track.stop());
-    }
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
     }
     if (synthRef.current) {
       synthRef.current.cancel();
@@ -144,9 +135,9 @@ export default function VoiceChatPage() {
         await initializeAudio();
         recognitionRef.current.start();
         setIsRecording(true);
-        setIsSpeaking(false); // Stop AI speaking when user starts talking
+        setIsSpeaking(false);
         if (synthRef.current) {
-          synthRef.current.cancel(); // Stop any ongoing speech
+          synthRef.current.cancel();
         }
       }
     } catch (error) {
@@ -167,11 +158,6 @@ export default function VoiceChatPage() {
 
   const initializeAudio = async () => {
     try {
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-        analyserRef.current = audioContextRef.current.createAnalyser();
-      }
-
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       micStreamRef.current = stream;
     } catch (err) {
@@ -190,8 +176,7 @@ export default function VoiceChatPage() {
       if (synthRef.current && audioEnabled) {
         synthRef.current.cancel();
       }
-
-      setError(''); // Clear any previous errors
+      setError('');
     } catch (err) {
       console.error('Audio toggle error:', err);
       setError('Could not initialize audio. Please check browser permissions.');
@@ -201,7 +186,6 @@ export default function VoiceChatPage() {
 
   const handleMessage = async (text) => {
     try {
-      setIsProcessing(true);
       setMessages(prev => [...prev, { role: 'user', content: text }]);
       
       const response = await fetch('/api/chat', {
@@ -209,7 +193,6 @@ export default function VoiceChatPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           message: text,
-          context: 'interview',
           currentQuestion: INTERVIEW_QUESTIONS[currentQuestionIndex]
         }),
       });
@@ -219,7 +202,6 @@ export default function VoiceChatPage() {
       
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
       
-      // Move to next question or end interview
       if (currentQuestionIndex < INTERVIEW_QUESTIONS.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
         setTimeout(() => {
@@ -236,7 +218,6 @@ export default function VoiceChatPage() {
         if (audioEnabled) {
           speakText(closingMessage);
         }
-        saveConversationHistory();
       }
       
       if (audioEnabled) {
@@ -245,27 +226,12 @@ export default function VoiceChatPage() {
     } catch (error) {
       console.error('Error:', error);
       setError('Error: ' + error.message);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const saveConversationHistory = async () => {
-    try {
-      await fetch('/api/history', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversation: messages }),
-      });
-    } catch (error) {
-      console.error('Failed to save conversation:', error);
     }
   };
 
   const speakText = (text) => {
     if (!synthRef.current) {
       try {
-        // Initialize speech synthesis if not already done
         synthRef.current = window.speechSynthesis;
       } catch (err) {
         console.error('Speech synthesis initialization error:', err);
@@ -273,32 +239,22 @@ export default function VoiceChatPage() {
       }
     }
 
-    // Cancel any ongoing speech
     try {
       synthRef.current.cancel();
 
-      // Create and configure utterance
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1;
       utterance.pitch = 1;
       utterance.volume = 1;
-      utterance.lang = 'en-US'; // Set language explicitly
+      utterance.lang = 'en-US';
 
-      // Handle events
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-      };
-
-      utterance.onend = () => {
-        setIsSpeaking(false);
-      };
-
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
       utterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
         setError('Error speaking: ' + event.error);
         setIsSpeaking(false);
         
-        // Try to reinitialize speech synthesis
         if (event.error === 'not-allowed') {
           synthRef.current = null;
           setAudioEnabled(false);
@@ -306,7 +262,6 @@ export default function VoiceChatPage() {
         }
       };
 
-      // Speak the text
       synthRef.current.speak(utterance);
     } catch (err) {
       console.error('Speech synthesis error:', err);
@@ -317,25 +272,16 @@ export default function VoiceChatPage() {
 
   useEffect(() => {
     if (messages.length === 0) {
-      handleInitialGreeting();
+      setMessages([{ role: 'assistant', content: INTERVIEW_GREETING }]);
+      setCurrentQuestionIndex(0);
     }
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleInitialGreeting = async () => {
-    setMessages([{ role: 'assistant', content: INTERVIEW_GREETING }]);
-    setCurrentQuestionIndex(0);
-  };
+  }, [messages]);
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      {/* Header */}
       <div className="p-4 flex items-center justify-between">
-        <div className="w-8" /> {/* Spacer */}
+        <div className="w-8" />
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleAudio}
@@ -347,15 +293,9 @@ export default function VoiceChatPage() {
               <VolumeX className="h-6 w-6" />
             )}
           </button>
-          <Link href="/history">
-            <button className="text-white/80 hover:text-white">
-              <History className="h-6 w-6" />
-            </button>
-          </Link>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="relative w-72 h-72">
           <canvas
@@ -367,7 +307,6 @@ export default function VoiceChatPage() {
         </div>
       </div>
 
-      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <AnimatePresence>
           {messages.map((message, index) => (
@@ -393,7 +332,6 @@ export default function VoiceChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Footer Controls */}
       <div className="p-8 flex items-center justify-center space-x-8">
         <button
           onClick={toggleRecording}
@@ -413,7 +351,6 @@ export default function VoiceChatPage() {
         </button>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="absolute bottom-20 left-0 right-0 mx-auto text-center">
           <div className="bg-red-500 text-white px-4 py-2 rounded-lg inline-block">
