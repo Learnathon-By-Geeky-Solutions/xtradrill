@@ -10,7 +10,11 @@ const SignUpPage = () => {
 
   return (
     <div className="flex justify-center w-full mt-6">
-      <SignUp afterSignUpUrl="dashboard" />
+      <SignUp 
+        afterSignInUrl="/dashboard"
+        afterSignUpUrl="/dashboard"
+        redirectUrl="/dashboard"
+      />
     </div>
   );
 };
