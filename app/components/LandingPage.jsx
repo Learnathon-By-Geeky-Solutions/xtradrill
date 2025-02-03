@@ -141,11 +141,18 @@ const LandingPage = () => {
               >
                 SDGs
               </Link>
-              <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
-                <button className="bg-[#000033] text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors">
-                  Get Started
-                </button>
-              </Link>
+              <div className="flex space-x-4">
+                <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
+                  <button className="bg-[#000033] text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors">
+                    Looking for a Job
+                  </button>
+                </Link>
+                <Link href={isSignedIn ? "/recruiter-dashboard" : "/recruiter/sign-in"}>
+                  <button className="bg-indigo-600 text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors">
+                    Looking to Hire
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -174,14 +181,24 @@ const LandingPage = () => {
                 >
                   SDGs
                 </Link>
-                <Link
-                  href={isSignedIn ? "/dashboard" : "/sign-in"}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <button className="bg-[#000033] text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors w-full">
-                    Get Started
-                  </button>
-                </Link>
+                <div className="flex flex-col space-y-4">
+                  <Link
+                    href={isSignedIn ? "/dashboard" : "/sign-in"}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <button className="bg-[#000033] text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors w-full">
+                      Looking for a Job
+                    </button>
+                  </Link>
+                  <Link
+                    href={isSignedIn ? "/recruiter-dashboard" : "/recruiter/sign-in"}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <button className="bg-indigo-600 text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors w-full">
+                      Looking to Hire
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
           )}
@@ -202,16 +219,18 @@ const LandingPage = () => {
                   to capture your audience's attention.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-                  <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
-                    <button className="bg-indigo-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center w-full sm:w-auto">
-                      Start Learning <ChevronRight className="ml-3 h-6 w-6" />
-                    </button>
-                  </Link>
-                  <Link href="/watch-demo">
-                    <button className="border-2 border-gray-300 text-gray-700 px-10 py-4 rounded-full text-lg font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-colors w-full sm:w-auto">
-                      Watch Demo
-                    </button>
-                  </Link>
+                  <div className="flex space-x-4">
+                    <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
+                      <button className="bg-[#000033] text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors">
+                        Looking for a Job
+                      </button>
+                    </Link>
+                    <Link href={isSignedIn ? "/recruiter-dashboard" : "/recruiter/sign-in"}>
+                      <button className="bg-indigo-600 text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors">
+                        Looking to Hire
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
               <div className="md:w-1/2 mt-8 md:mt-0">
