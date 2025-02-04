@@ -10,6 +10,38 @@ const RoleGuard = ({ children, allowedRoles }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const handleEmployerAuthorization = async (orgs) => {
+      if (orgs.length === 0) {
+        router.push("/recruiter/onboarding");
+        return false;
+      }
+
+      const orgId = orgs[0].organization.id;
+      const response = await fetch(`/api/organizations/status?clerkOrgId=${orgId}`);
+      
+      if (!response.ok) {
+        console.error("Failed to fetch organization status");
+        return false;
+      }
+
+      const { status } = await response.json();
+      if (status === "pending" || status === "rejected") {
+        router.push(`/dashboard?status=${status}`);
+        return false;
+      }
+
+      return true;
+    };
+
+    const redirectBasedOnRole = (role) => {
+      const redirectPaths = {
+        employer: "/recruiter/dashboard",
+        candidate: "/dashboard",
+        default: "/"
+      };
+      router.push(redirectPaths[role] || redirectPaths.default);
+    };
+
     const checkAuthorization = async () => {
       if (!isLoaded || !user) {
         setIsLoading(false);
@@ -18,69 +50,33 @@ const RoleGuard = ({ children, allowedRoles }) => {
 
       try {
         const userRole = user.publicMetadata.organizationRole;
+        const isAdmin = user.publicMetadata.role === "admin";
 
-        // If user is an admin, they're always authorized
-        if (user.publicMetadata.role === "admin") {
+        if (isAdmin) {
           setIsAuthorized(true);
           setIsLoading(false);
           return;
         }
 
-        // For employers, check if they have an approved organization
         if (userRole === "employer") {
-          // Get all organizations the user is a member of
           const orgs = await user.getOrganizationMemberships();
-          
-          if (orgs.length === 0) {
-            // No organizations, redirect to onboarding
-            router.push("/recruiter/onboarding");
-            setIsLoading(false);
-            return;
-          }
-
-          // Check if any of their organizations are approved
-          const orgId = orgs[0].organization.id;
-          const response = await fetch(`/api/organizations/status?clerkOrgId=${orgId}`);
-          
-          if (!response.ok) {
-            console.error("Failed to fetch organization status");
-            setIsLoading(false);
-            return;
-          }
-
-          const { status } = await response.json();
-
-          if (status === "pending") {
-            router.push("/dashboard?status=pending");
-            setIsLoading(false);
-            return;
-          }
-
-          if (status === "rejected") {
-            router.push("/dashboard?status=rejected");
+          const isEmployerAuthorized = await handleEmployerAuthorization(orgs);
+          if (!isEmployerAuthorized) {
             setIsLoading(false);
             return;
           }
         }
 
-        // Check if user's role is in allowed roles
         if (allowedRoles.includes(userRole)) {
           setIsAuthorized(true);
         } else {
-          // Redirect based on role
-          if (userRole === "employer") {
-            router.push("/recruiter/dashboard");
-          } else if (userRole === "candidate") {
-            router.push("/dashboard");
-          } else {
-            router.push("/");
-          }
+          redirectBasedOnRole(userRole);
         }
       } catch (error) {
         console.error("Authorization check failed:", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
 
     checkAuthorization();
