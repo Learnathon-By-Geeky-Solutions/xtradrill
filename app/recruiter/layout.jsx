@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
+import PropTypes from 'prop-types';
 
 const RecruiterLayout = ({ children }) => {
   const pathname = usePathname();
@@ -80,6 +81,10 @@ const RecruiterLayout = ({ children }) => {
       </main>
     </div>
   );
+};
+
+RecruiterLayout.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 export default RecruiterLayout;
