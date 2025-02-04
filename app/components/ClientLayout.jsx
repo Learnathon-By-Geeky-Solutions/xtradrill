@@ -25,7 +25,7 @@ export default function ClientLayout({ children }) {
   }, []);
 
   // Normalize the pathname to handle trailing slashes
-  const normalizedPath = pathname.replace(/\/+$/, "");
+  const normalizedPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
   const isHomePage = normalizedPath === "" || normalizedPath === "/";
 
   // Define paths where Sidebar should not be rendered
