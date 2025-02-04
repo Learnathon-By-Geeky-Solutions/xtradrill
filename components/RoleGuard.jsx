@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import PropTypes from 'prop-types';
 
 const RoleGuard = ({ children, allowedRoles }) => {
   const router = useRouter();
@@ -90,6 +91,11 @@ const RoleGuard = ({ children, allowedRoles }) => {
   }
 
   return isAuthorized ? children : null;
+};
+
+RoleGuard.propTypes = {
+  children: PropTypes.node.isRequired,
+  allowedRoles: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default RoleGuard;
