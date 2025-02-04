@@ -2,6 +2,17 @@
 
 import { useEffect, useState } from "react";
 
+const getStatusStyle = (status) => {
+  switch (status) {
+    case "pending":
+      return "bg-yellow-100 text-yellow-800";
+    case "approved":
+      return "bg-green-100 text-green-800";
+    default:
+      return "bg-red-100 text-red-800";
+  }
+};
+
 export default function AdminDashboard() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -97,11 +108,7 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4 border-b">{org.companySize}</td>
                     <td className="px-6 py-4 border-b">{org.industry}</td>
                     <td className="px-6 py-4 border-b">
-                      <span className={`px-2 py-1 rounded ${
-                        org.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                        org.status === "approved" ? "bg-green-100 text-green-800" :
-                        "bg-red-100 text-red-800"
-                      }`}>
+                      <span className={`px-2 py-1 rounded ${getStatusStyle(org.status)}`}>
                         {org.status}
                       </span>
                     </td>
