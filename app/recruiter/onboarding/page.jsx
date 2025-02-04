@@ -38,7 +38,7 @@ const OnboardingPage = () => {
           if (status === "approved") {
             router.push("/recruiter/dashboard");
           } else if (status === "pending") {
-            router.push("/dashboard?status=pending");
+            router.push("/recruiter/pending-approval");
           } else if (status === "rejected") {
             router.push("/dashboard?status=rejected");
           }
@@ -68,7 +68,7 @@ const OnboardingPage = () => {
         throw new Error("Failed to create organization");
       }
 
-      router.push("/dashboard?status=pending");
+      router.push("/recruiter/pending-approval");
     } catch (error) {
       console.error("Error creating organization:", error);
       alert("Failed to create organization. Please try again.");
